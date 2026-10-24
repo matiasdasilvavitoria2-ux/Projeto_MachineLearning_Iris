@@ -1,4 +1,6 @@
+
 import streamlit as st
+import joblib
 
 # Configuração inicial da página
 st.set_page_config(
@@ -26,9 +28,9 @@ st.header("Informe as características da flor")
 st.info(
     """
     Preencha os valores abaixo com as medidas da flor em centímetros.
-    
+
     O modelo Iris normalmente utiliza quatro características:
-    
+
     - Comprimento da sépala
     - Largura da sépala
     - Comprimento da pétala
@@ -88,13 +90,12 @@ dados_iris = {
 st.write(dados_iris)
 
 # Botão para fazer a previsão
-botao_adivinhar = st.button("🔍 Adivinhar espécie da flor", type="primary")
+botao_adivinhar = st.button(
+    "🔍 Adivinhar espécie da flor",
+    type="primary"
+)
 
 if botao_adivinhar:
-    st.success("Botão funcionando! Aqui futuramente o modelo fará a previsão.")
-
-    st.write("Os dados enviados para o modelo seriam:")
-
     entrada_modelo = [[
         sepal_length,
         sepal_width,
@@ -102,14 +103,17 @@ if botao_adivinhar:
         petal_width
     ]]
 
-    st.code(entrada_modelo, language="python")
+    try:
+        modelo = joblib.load("NOME_DO_ARQUIVO.joblib")
+        resultado = modelo.predict(entrada_modelo)
 
-    st.warning(
-        """
-        A implementação do modelo ainda não foi adicionada.
-        O próximo passo será carregar o arquivo `.joblib` e usar `model.predict()`.
-        """
-    )
+        st.success(f"Espécie prevista: {resultado[0]}") 
+
+    except FileNotFoundError:
+        st.error("Arquivo do modelo não encontrado. Verifique o nome.")
+
+    except Exception as erro:
+        st.error(f"Erro ao realizar a previsão: {erro}")
 
 st.divider()
 
